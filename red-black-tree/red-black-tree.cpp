@@ -54,7 +54,6 @@ int checkProb(nodeRB * p, nodeRB *&par, nodeRB *&sib) { // check null , p is gra
 		sib = p->right->left;
 		return 4;
 	}
-	//cout << "Do nothing !\n"; 
 	return 0; // all right, sib and par will be nullptr 
 }
 nodeRB* leftRotation(nodeRB *sib, nodeRB *par, RedBlackTree &rb) {
@@ -189,15 +188,8 @@ void fixDoubleBlack(nodeRB* &grandpar, bool isLeft, RedBlackTree &rb) {
 			if (getColor(uncle->right) == RED) { // right right 
 				assignColor(uncle->right, BLACK);
 				swapColor(uncle, grandpar); 
-				//cout << uncle->value << " " << grandpar->value << endl; 
 				grandpar = leftRotation(uncle, grandpar, rb);
 				update(grandpar, isGrandparLeft); 
-				traverse(rb.root); 
-				cout << rb.root; 
-				cout << "HERE 1\n" ; 
-				// cout << grandpar->value << " " << grandpar->left->value << " " <<grandpar->right->value << " " << grandpar->parent->value <<endl;
-				// cout << grandpar->parent->left->value << " " << grandpar->parent->right->value << endl; 
-
 			}
 			else if (getColor(uncle->left) == RED) { // right left
 				assignColor(uncle->left, BLACK);
@@ -205,7 +197,6 @@ void fixDoubleBlack(nodeRB* &grandpar, bool isLeft, RedBlackTree &rb) {
 				swapColor(uncle, grandpar);
 				grandpar = leftRotation(uncle, grandpar, rb);
 				update(grandpar, isGrandparLeft);
-				cout << "HERE 1.2\n";
 			}
 			else { // all children of uncle is black
 				assignColor(uncle, RED); // jump fix later, need mark the double black for grandpar here
@@ -217,7 +208,6 @@ void fixDoubleBlack(nodeRB* &grandpar, bool isLeft, RedBlackTree &rb) {
 				else {
 					assignColor(grandpar, BLACK); 
 				}
-				cout << "HERE 1.3\n";
 			}
 		}
 		else {
@@ -226,7 +216,6 @@ void fixDoubleBlack(nodeRB* &grandpar, bool isLeft, RedBlackTree &rb) {
 				swapColor(uncle, grandpar);
 				grandpar = rightRotation(uncle, grandpar, rb);
 				update(grandpar, isGrandparLeft);
-				cout << "HERE 1.4\n";
 			}
 			else if (getColor(uncle->right) == RED) { // left right
 				assignColor(uncle->right, BLACK);
@@ -234,7 +223,6 @@ void fixDoubleBlack(nodeRB* &grandpar, bool isLeft, RedBlackTree &rb) {
 				swapColor(uncle, grandpar);
 				grandpar = rightRotation(uncle, grandpar, rb);
 				update(grandpar, isGrandparLeft);
-				cout << "HERE 1.5\n";
 			} 
 			else { // black black in all children of uncle
 				assignColor(uncle, RED); 
@@ -247,7 +235,6 @@ void fixDoubleBlack(nodeRB* &grandpar, bool isLeft, RedBlackTree &rb) {
 				else {
 					assignColor(grandpar, BLACK);
 				}
-				cout << "HERE 1.6\n";
 			}
 		}
 	}
@@ -266,12 +253,6 @@ void fixDoubleBlack(nodeRB* &grandpar, bool isLeft, RedBlackTree &rb) {
 
 		}
 	}
-	//update(grandpar, isGrandparLeft);
-	traverse(rb.root); 
-	cout << "HERE 2\n";
-	// cout <<grandpar->parent->value <<" " << grandpar->parent->left->value << " " << grandpar->parent->right->value << endl;
-	// cout << grandpar->left->value << " " << grandpar->right->value << endl; 
-	// traverse(rb.root);
 }
 void deleteNodeRB(nodeRB*& p, int x, RedBlackTree& rb) { // p : parent, which is kept
 	if (!p)
@@ -324,19 +305,9 @@ void deleteNodeRB(nodeRB*& p, int x, RedBlackTree& rb) { // p : parent, which is
 			else {
 				nodeRB* par = p->parent; //p will be delete
 				bool isLeft = (par->left == p) ? true : false; // p become double black
-				//assignColor((isLeft) ? par->right : par->left, RED);
 				delete p;
 				p = nullptr; // p become nullptr
-				traverse(rb.root);
-				cout << "\nfast check \n";  
-				//if (getColor(par) == BLACK) {
-					// become double black
-					fixDoubleBlack(par, isLeft, rb);
-					cout << "HERE 4\n";
-				//}
-				//else { // parent red
-				//	assignColor(par, BLACK);
-				//}
+				fixDoubleBlack(par, isLeft, rb);
 			}
 		}
 		else if (p->left && p->right) {
@@ -365,29 +336,22 @@ int main() {
 		nodeRB *p = newNode(i, x); 
 		RBTree.root = pushNode(RBTree.root, p, RBTree);
 		assignColor(RBTree.root, BLACK) ;
-		//cout << "\n------------------------------------------------------------------\n";
-		//cout << x << endl; 
-		//traverse(RBTree.root); 
 	}
-	//cin >> x; 
-	//nodeRB* p = searchRB(RBTree.root, x); 
-	//cout << p->key << endl; 
+	traverse(RBTree.root); 
 	cout << "\n---------------------End the Input------------------------------------\n";
-	//traverse(RBTree.root);
 	while (true) {
 		cin >> x;
 		if (!searchRB(RBTree.root, x)) {
 			cout << "Not found\n"; 
 			continue; 
 		}
-		/*RBTree.root = */ deleteNodeRB(RBTree.root, x, RBTree);
+		deleteNodeRB(RBTree.root, x, RBTree);
 		if (isTreeEmpty(RBTree)) {
 			cout << "This tree is empty now \n"; 
 			break; 
 		} 
 		else 
 			traverse(RBTree.root);
-		cout << RBTree.root;
 		cout << "\n------------------------------------------------------------------\n";
 	}
 	// 8 
