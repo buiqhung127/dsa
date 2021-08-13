@@ -6,14 +6,11 @@ void swap(int &a, int &b){
 	b = c; 
 }
 int partion(int* a, int l, int r) {
-	int j = r; 
-	for (int i = r ; i > l ; i--)
-		if (a[i] < a[l]) 
-			swap(a[j--], a[i]); 
-	swap(a[l], a[j]); 
-	for (int i = 0; i < 9; i++)
-		cout << a[i] << " "; 
-	cout << endl; 
+	int j = l; 
+	for (int i = l ; i < r ; i++)
+		if (a[i] < a[r]) 
+			swap(a[j++], a[i]); 
+	swap(a[r], a[j]); 
 	return j; 
 }
 void quickSort(int *a, int l, int r) {
