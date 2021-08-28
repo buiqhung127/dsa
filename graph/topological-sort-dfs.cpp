@@ -20,23 +20,25 @@ void pushNode(adjacentList* graph, int a, int b){ // push b to a
     graph[a].head = v ; 
 }
 void topologicalSort(adjacentList* graph, int* isVisited, int n,int *inorderList, int u,  bool &isValid, int &k){
-    cout << u <<endl ; 
-    if (isValid == false)
+    // isVisited has 3 status, isVisited = -1 mean we haven't visited this vertex before
+    // isVisited = 1 when we have visited it but we haven't visit all the vertices that are pointed by this vertex.
+    // isVisited = 2 when we have visited it and all the vertices that this vertex points to . 
+    if (isValid == false) // if the graph have a cycle, out the function. 
         return ; 
     vertex *p = graph[u].head ; 
-    while (p){ 
-        if (isVisited[p->val] == -1){
-            isVisited[p->val] = 1 ; 
+    while (p){ // travel all the node being point by this vertex
+        if (isVisited[p->val] == -1){ // if the vertex is not visited
+            isVisited[p->val] = 1 ; // mark it as not-fully-visited vertex then visit this vertex by recursion. 
             topologicalSort(graph, isVisited, n, inorderList, p->val, isValid, k) ; 
         } else 
-        if (isVisited[p->val] == 1){ // there is an cycle
-            isValid = false ; 
+        if (isVisited[p->val] == 1){ // there is an cycle (a not fully visited node connect to the same status one)
+            isValid = false ; // mark it as not valid graph and return
             return ; 
         }
         p = p->next ; 
     }
-    inorderList[k++] = u ; 
-    isVisited[u] = 2 ; 
+    inorderList[k++] = u ; // this vertex is now fully visited
+    isVisited[u] = 2 ; // mark this vertex to the fully visited status. 
 }
 int main(){
     fstream fi("input-topo-sort.txt", ios::in) ;

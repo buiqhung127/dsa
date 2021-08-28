@@ -1,26 +1,47 @@
 #include<iostream>
-#define RED true 
-#define BLACK false 
+#define RED true // simplify the code
+#define BLACK false // simpify the code
 using namespace std; 
-struct nodeRB {
-	int key; 
-	int value; 
+struct nodeRB { // a little bit different to the node of binary search tree
+	int key; // data
+	int value;  //data
 	bool color; // red : 1, black : 0 
-	nodeRB* parent; 
-	nodeRB* left;
-	nodeRB* right; 
+	nodeRB* parent; // for simplicity, we need member that point out the parent of the current node
+	nodeRB* left; // store the adress of left child, null if this node does not has left child. 
+	nodeRB* right; // store the adress of right child, null if this node does not has right child. 
 };
 struct RedBlackTree {
-	nodeRB* root;
+	nodeRB* root; // we must store the address of the root.
 };
+void initialize(RedBlackTree& RBTree) {
+	RBTree.root = nullptr; // null root means the tree is now empty.
+}
 nodeRB* newNode(int k, int val) {
 	nodeRB* p = new nodeRB; 
 	p->color = RED; // all new node must be red
-	p->key = k; 
-	p->value = val; 
+	p->key = k; // store the data
+	p->value = val; // store the data
+	// the node created recently has not have connection to another one yet so all the member below is null.
 	p->parent = nullptr; 
 	p->left = nullptr; 
 	p->right = nullptr; 
+	return p; 
+}
+nodeRB* pushNode(nodeRB *p, nodeRB* t , RedBlackTree rb) {
+	if (!p) { // find a leaf with a corrected spot to assign the new node ( nodeRB *t )
+		p = t; 
+	}
+	else { // this current node is already occupied
+		if (t->value > p->value) { // the potential spot for node t is on the right of p
+			p->right = pushNode(p->right, t, rb); // pass as a highest node , visit the right node of p  
+			p->right->parent = p; // after pushing, re-mark the parent of p child is p
+		}
+		else {	 // the potential spot for node t is on the left of p
+			p->left = pushNode(p->left, t, rb); // pass as a highest node , visit the left node of p  
+			p->left->parent = p; // after pushing, re-mark the parent of p child is p
+		}
+		p = judgment(p, rb); // adjust the tree if there is an conflict to the red black tree properties
+	}
 	return p; 
 }
 bool getColor(nodeRB * p){
@@ -34,6 +55,7 @@ void assignColor(nodeRB* &p, bool color){
 		p->color = color ; 
 }
 int checkProb(nodeRB * p, nodeRB *&par, nodeRB *&sib) { // check null , p is grand parent
+	// check if the parent of the red node is red. If it is, get the position case and the address of 2 consecutive red node.
 	if (getColor(p->left) == RED && getColor(p->left->left) == RED) { // left left
 		par = p->left;
 		sib = p->left->left;
@@ -54,7 +76,7 @@ int checkProb(nodeRB * p, nodeRB *&par, nodeRB *&sib) { // check null , p is gra
 		sib = p->right->left;
 		return 4;
 	}
-	return 0; // all right, sib and par will be nullptr 
+	return 0; // all right (no conflict is found), sib and par will be nullptr 
 }
 nodeRB* leftRotation(nodeRB *sib, nodeRB *par, RedBlackTree &rb) {
 	nodeRB* t = sib->left; 
@@ -87,65 +109,47 @@ void swapColor(nodeRB* a, nodeRB* b) {
 	assignColor(a,getColor(b)); 
 	assignColor(b,c) ; 
 }
-nodeRB* judgment(nodeRB* grandpar, RedBlackTree rb) { // check nullptr 
+nodeRB* judgment(nodeRB* grandpar, RedBlackTree rb) { // handle the conflict when insert
 	nodeRB* par = nullptr;
 	nodeRB* sib = nullptr;
-	int sit = checkProb(grandpar, par, sib); // check the situation, par and sib is red
+	int sit = checkProb(grandpar, par, sib); // check the situation, par and sib is red and now they having the adress of 2 red nodes 
 	if (getColor(grandpar->left) == RED && getColor(grandpar->right) == RED && sit != 0) { // uncle and parent are red
-		assignColor(grandpar->left, BLACK);
-		assignColor(grandpar->right, BLACK);
-		assignColor(grandpar, RED);
-		return grandpar;
+		assignColor(grandpar->left, BLACK); // make the parent and uncle to be black
+		assignColor(grandpar->right, BLACK); // make the parent and uncle to be black
+		assignColor(grandpar, RED); // make the grandparent to be red
+		return grandpar; // go to the grand parent later
 	}
 	// uncle is black
 	if (sit == 1) { // left left
-		swapColor(par, grandpar) ;
-		return  rightRotation(par, grandpar, rb); 
+		swapColor(par, grandpar) ; // swap color parent and grandparent
+		return  rightRotation(par, grandpar, rb); // then right rotate grandparent and parent
 	}
 	else if (sit == 2) { // left right 
-		grandpar->left = leftRotation(sib, par, rb);
-		swapColor(grandpar, grandpar->left); 
-		return rightRotation(grandpar->left, grandpar, rb); 
+		grandpar->left = leftRotation(sib, par, rb); // left rotate to become situation 1 
+		swapColor(grandpar, grandpar->left); // do the same to situation 1, swap the color 
+		return rightRotation(grandpar->left, grandpar, rb);  // then right rotation
 	}
 	else if (sit == 3) { // right right
-		swapColor(par, grandpar) ; 
-		return  leftRotation(par, grandpar, rb);
+		swapColor(par, grandpar) ; // swap color parent and grandparent
+		return  leftRotation(par, grandpar, rb); // then left rotate grandparent and parent
 	}
 	else if (sit == 4) { // right left
-		grandpar->right = rightRotation(sib, par, rb);
-		swapColor(grandpar, grandpar->right);
-		return leftRotation(grandpar->right, grandpar, rb);	
+		grandpar->right = rightRotation(sib, par, rb);// right rotate to become situation 3 
+		swapColor(grandpar, grandpar->right); // do the same to situation 3, first we swap the color 
+		return leftRotation(grandpar->right, grandpar, rb);	// then left rotation
 	} else  // if black red, do nothing
 		return grandpar ; 
 }
-nodeRB* pushNode(nodeRB *p, nodeRB* t , RedBlackTree rb) {
-	if (!p) {
-		p = t; 
-	}
-	else {
-		if (t->value > p->value) {
-			p->right = pushNode(p->right, t, rb); // pass as a highest node 
-			p->right->parent = p;
-		}
-		else {	
-			p->left = pushNode(p->left, t, rb);
-			p->left->parent = p; 
-		}
-		p = judgment(p, rb); 
-	}
-	return p; 
-}
-void initialize(RedBlackTree& RBTree) {
-	RBTree.root = nullptr;
-}
-void traverse(nodeRB* p) {
-	if (!p) return;
-	traverse(p->left);
-	cout << p->value << " : " << p->color << "\t|";
-	if (p->left) cout << "Left : " << p->left->value << "\t|";
-	if (p->right) cout << "Right : " << p->right->value << "\t|";
+
+
+void traverse(nodeRB* p) { // inorder traverse
+	if (!p) return; // avoid acessing a null pointer
+	traverse(p->left); // go to the left subtree
+	cout << p->value << " : " << p->color << "\t|"; // print out the value and the color
+	if (p->left) cout << "Left : " << p->left->value << "\t|"; // print out the value of the left node
+	if (p->right) cout << "Right : " << p->right->value << "\t|"; // print out the value of the right node
 	cout << endl;
-	traverse(p->right);
+	traverse(p->right); // go to the right subtree
 }
 void destroyTree(nodeRB*& p) {
 	if (p) {
@@ -156,16 +160,16 @@ void destroyTree(nodeRB*& p) {
 	}
 }
 nodeRB* searchRB(nodeRB* p, int key) {
-	if (!p)
-		return nullptr; 
-	if (p->value == key) {
-		return p;
+	if (!p) // p having key does not exist
+		return nullptr;  // return null
+	if (p->value == key) { // a node with the key that we want to find exists
+		return p; // return that node
 	}
-	else if (p->value > key) {
-		return searchRB(p->left, key);
+	else if (p->value > key) { // current node's value is larger than the key
+		return searchRB(p->left, key); // the node we want to find, is in the left sub tree of this current node, or does not exist
 	}
-	else
-		return searchRB(p->right, key); 
+	else // current node's value is smaller than the key
+		return searchRB(p->right, key); // the node we want to find, is in the right sub tree of this current node, or does not exist
 }
 void update(nodeRB *grandpar, bool isGrandparLeft) {
 	if (grandpar->parent && isGrandparLeft) {
@@ -178,18 +182,19 @@ void update(nodeRB *grandpar, bool isGrandparLeft) {
 void fixDoubleBlack(nodeRB* &grandpar, bool isLeft, RedBlackTree &rb) {
 	if (!grandpar)
 		return; 
-	bool isGrandparLeft = (grandpar->parent && grandpar->parent->left == grandpar) ? true : false; 
-	nodeRB *uncle = (isLeft) ? grandpar->right : grandpar->left;
-	if (!uncle) {
+	bool isGrandparLeft = (grandpar->parent && grandpar->parent->left == grandpar) ? true : false; // check the grandparent is left child
+	// or right child
+	nodeRB *uncle = (isLeft) ? grandpar->right : grandpar->left; // dertermine the uncle
+	if (!uncle) { // if the uncle is nil, just get out the function
 		return;
-	}
-	if (getColor(uncle) == BLACK) {
-		if (isLeft) {
-			if (getColor(uncle->right) == RED) { // right right 
-				assignColor(uncle->right, BLACK);
-				swapColor(uncle, grandpar); 
-				grandpar = leftRotation(uncle, grandpar, rb);
-				update(grandpar, isGrandparLeft); 
+	} // now the uncle is not nil
+	if (getColor(uncle) == BLACK) { // if the uncle is black and 
+		if (isLeft) { // determine the position
+			if (getColor(uncle->right) == RED) { // uncle right uncle 's red child right  
+				assignColor(uncle->right, BLACK); // make the considering child of uncle red
+				swapColor(uncle, grandpar);  // swap the color between uncle and grandpar
+				grandpar = leftRotation(uncle, grandpar, rb); // left rotatation 
+				update(grandpar, isGrandparLeft);  // 
 			}
 			else if (getColor(uncle->left) == RED) { // right left
 				assignColor(uncle->left, BLACK);
@@ -199,14 +204,14 @@ void fixDoubleBlack(nodeRB* &grandpar, bool isLeft, RedBlackTree &rb) {
 				update(grandpar, isGrandparLeft);
 			}
 			else { // all children of uncle is black
-				assignColor(uncle, RED); // jump fix later, need mark the double black for grandpar here
-				if (getColor(grandpar) == BLACK) {
+				assignColor(uncle, RED); // make the uncle to be red
+				if (getColor(grandpar) == BLACK) { // grandpar is black
 					// become double black
-					update(grandpar, isGrandparLeft);
-					fixDoubleBlack(grandpar->parent, isGrandparLeft , rb); 
+					update(grandpar, isGrandparLeft); // update the parent of grandparent
+					fixDoubleBlack(grandpar->parent, isGrandparLeft , rb); // fix the double black of the granparent
 				}
-				else {
-					assignColor(grandpar, BLACK); 
+				else { // grandparent is red
+					assignColor(grandpar, BLACK); // red + black => black, make the grandparent to be black 
 				}
 			}
 		}
@@ -239,32 +244,33 @@ void fixDoubleBlack(nodeRB* &grandpar, bool isLeft, RedBlackTree &rb) {
 		}
 	}
 	else { // uncle red
-		if (isLeft) {
-			swapColor(uncle, grandpar); 
-			grandpar = leftRotation(uncle, grandpar, rb); // need mark the black
-			update(grandpar, isGrandparLeft);
-			fixDoubleBlack(grandpar->left,  true, rb); 
+		if (isLeft) { // mean uncle is right
+			swapColor(uncle, grandpar); // swap color between uncle and grandpar 
+			grandpar = leftRotation(uncle, grandpar, rb); // need mark the black, left rotate the uncle and grandpararent
+			update(grandpar, isGrandparLeft); // update the parent of grandparent
+			fixDoubleBlack(grandpar->left,  true, rb);  // fix the double black after rotate
 		}
-		else {
-			swapColor(uncle, grandpar);
-			grandpar = rightRotation(uncle, grandpar, rb); // need mark the black
+		else { // uncle is left
+			swapColor(uncle, grandpar); // swap color between uncle and grandpar 
+			grandpar = rightRotation(uncle, grandpar, rb); // need mark the black, right rotate the uncle and grandpararent
 			update(grandpar, isGrandparLeft);
-			fixDoubleBlack(grandpar->right, false, rb);
-
+			fixDoubleBlack(grandpar->right, false, rb);// fix the double black after rotate
 		}
 	}
 }
 void deleteNodeRB(nodeRB*& p, int x, RedBlackTree& rb) { // p : parent, which is kept
-	if (!p)
+	if (!p) // if reach the nil node, terminate the function
 		return ;
-	if (p->value < x)
-		deleteNodeRB(p->right, x, rb);
-	else if (p->value > x)
-		deleteNodeRB(p->left, x, rb);
-	else { // 1 child
-		if (p->left && !p->right) {
-			if (getColor(p->left) == RED || getColor(p) == RED) { // parent and sib are not red at the same time
-				p->value = p->left->value;
+	if (p->value < x)  // current node's value is smaller than the key
+		deleteNodeRB(p->right, x, rb); // the node we want to find, is in the right sub tree of this current node, or does not exist
+	else if (p->value > x)  // current node's value is larger than the key
+		deleteNodeRB(p->left, x, rb); // the node we want to find, is in the left sub tree of this current node, or does not exist
+	else { 
+		// 1 child
+		if (p->left && !p->right) { // have only left child
+			if (getColor(p->left) == RED || getColor(p) == RED) { // parent and child are not red at the same time, either parent or child
+			// is red
+				p->value = p->left->value; // delete p then, replace by the child. Assign the color of p to be black
 				assignColor(p, BLACK); 
 				delete p->left;
 				p->left = nullptr;
@@ -276,12 +282,12 @@ void deleteNodeRB(nodeRB*& p, int x, RedBlackTree& rb) { // p : parent, which is
 				assignColor(p, BLACK);
 				delete p->left;
 				p->left = nullptr;
-				fixDoubleBlack(par, isLeft, rb);
+				fixDoubleBlack(par, isLeft, rb); // fix the double black 
 			}
 		}
-		else if (!p->left && p->right) {
-			if (getColor(p->right) == RED || getColor(p) == RED) { // parent and sib are not red at the same time
-				p->value = p->right->value;
+		else if (!p->left && p->right) { // have only right child
+			if (getColor(p->right) == RED || getColor(p) == RED) {  // parent and child are not red at the same time, either parent or child
+				p->value = p->right->value; // delete p then, replace by the child . Assign the color of p to be black
 				assignColor(p, BLACK);
 				delete p->right;
 				p->right = nullptr;
@@ -293,28 +299,28 @@ void deleteNodeRB(nodeRB*& p, int x, RedBlackTree& rb) { // p : parent, which is
 				assignColor(p, BLACK);
 				delete p->right;
 				p->right = nullptr;
-				fixDoubleBlack(par, isLeft, rb);
+				fixDoubleBlack(par, isLeft, rb); // fix the double black 
 			}
 		}
-		else if (!p->left && !p->right) { // 2 child black null
-			if (p->color == RED || p == rb.root) {
+		else if (!p->left && !p->right) { // 2 child are nils
+			if (p->color == RED || p == rb.root) { // if color of p is red or p is the root, just delete p, mark it as a nil node.
 				delete p;
 				p = nullptr; 
 				return;
 			}
-			else {
+			else { // p's color is black
 				nodeRB* par = p->parent; //p will be delete
 				bool isLeft = (par->left == p) ? true : false; // p become double black
 				delete p;
 				p = nullptr; // p become nullptr
-				fixDoubleBlack(par, isLeft, rb);
+				fixDoubleBlack(par, isLeft, rb); // fix the double black 
 			}
 		}
-		else if (p->left && p->right) {
-			nodeRB* t = p->left;
+		else if (p->left && p->right) { //have 2 child is not nils
+			nodeRB* t = p->left; 
 			while (t->right)
 				t = t->right;
-			p->value = t->value;
+			p->value = t->value; // replace the value by the predecessor then delete that original predecessor
 			deleteNodeRB(p->left, p->value, rb);
 		}
 	}
@@ -332,10 +338,10 @@ int main() {
 	int n, x;
 	cin >> n; 
 	for (int i = 0; i < n; i++) {
-		cin >> x;
-		nodeRB *p = newNode(i, x); 
-		RBTree.root = pushNode(RBTree.root, p, RBTree);
-		assignColor(RBTree.root, BLACK) ;
+		cin >> x; // read the value
+		nodeRB *p = newNode(i, x); // create the new node by the index and the value
+		RBTree.root = pushNode(RBTree.root, p, RBTree); // push the node into tree
+		assignColor(RBTree.root, BLACK) ; // keep the root always black
 	}
 	traverse(RBTree.root); 
 	cout << "\n---------------------End the Input------------------------------------\n";

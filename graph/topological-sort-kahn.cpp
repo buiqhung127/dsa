@@ -48,22 +48,20 @@ int topologicalSort(adjacentList* graph, int n,int *inorderList){
     bool * isVisited = new bool[n] ; 
     int d = 0, front = 0, back = -1; 
     // initialize 
-    for (int i = 0 ; i < n ; i++){
-        //cout << i <<endl ;
+    for (int i = 0 ; i < n ; i++){ // init the queue by the vertices that are not directed to another vertices
         if (isEmpty(graph, i)){
             queue[++back] = i ;
-            isVisited[i] = true ; 
+            isVisited[i] = true ; // mark this as a visited vertex
         } 
     }
-    while (front <= back){
+    while (front <= back){ // while the queue is not empty
         int top = queue[front++] ; 
-        inorderList[d++] = top ; 
-        //cout <<top <<endl ; 
+        inorderList[d++] = top ; // push the vertex which is the front of the queue to the order-saving array
         for (int i = 0 ; i < n ; i++){
-            //cout <<"CC" ; 
-            deleteVertex(graph, i, top) ; 
-            //cout <<"CC2" ; 
-            if (!isVisited[i] && isEmpty(graph,i)){
+            deleteVertex(graph, i, top) ; // delete all the edge that comes to this vertex 
+            if (!isVisited[i] && isEmpty(graph,i)){ 
+            // after deleting that edge, push the remain vertex to the queue if 
+            // it is not directed to another vertices
                 queue[++back] = i ; 
                 isVisited[i] = true ; 
             }

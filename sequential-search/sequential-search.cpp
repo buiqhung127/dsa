@@ -2,10 +2,10 @@
 using namespace std ;
 
 int sequentialSearch(int* a, int n, int x){
-    for (int i = 0 ; i < n ; i++)
-        if (a[i] == x)
-            return i;
-    return -1 ; 
+    for (int i = 0 ; i < n ; i++) // run through the array
+        if (a[i] == x) // is match
+            return i; // return the position
+    return -1 ; // by convention, -1 mean not found. 
 }
 int main(){
     int n,x ; 

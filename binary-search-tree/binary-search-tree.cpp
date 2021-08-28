@@ -2,7 +2,7 @@
 using namespace std;
 struct Node {
 	int val;
-	int key; // be used to check
+	int key; 
 	Node* left;
 	Node* right;
 };
@@ -12,31 +12,31 @@ struct BinarySearchTree {
 
 Node* newNode(int key, int value) {
 	Node *p = new Node; 
-	p->key = key; 
-	p->val = value; 
-	p->left = nullptr;
+	p->key = key; // assign the key to the node
+	p->val = value; // assign the value to the node
+	p->left = nullptr; // become the leaf so 2 childs will be null
 	p->right = nullptr; 
 	return p; 
 }
 Node* insert(Node* p, int key, int value) {
-	if (!p) 
-		p = newNode(key, value); 
-	else {
-		if (value > p->val)
-			p->right = insert(p->right, key, value); 
-		else 
-			p->left = insert(p->left, key, value); 
+	if (!p) // found an suitable spot
+		p = newNode(key, value); // create new node and link to the tree
+	else { // current node is already occupied
+		if (value > p->val) // suitable spot must be on the right of this current node 
+			p->right = insert(p->right, key, value);  // visit to the right (guarantee the properties)
+		else // suitable spot must be on the left of this current node 
+			p->left = insert(p->left, key, value); // visit to the left (guarantee the properties)
 	}
 	return p;
 }
 void traverse(Node* p) {
-	if (p) {
-		cout << p->val << "\t| Key : " << p->key << "\t|\t" ;
-		if (p->left) cout <<"Left Child: " << p->left->val <<"\t";
-		if (p->right) cout <<"Right Child: " << p->right->val <<" ";
+	if (p) { // if p is not null
+		cout << p->val << "\t| Key : " << p->key << "\t|\t" ; // print the information
+		if (p->left) cout <<"Left Child: " << p->left->val <<"\t"; // avoid to access an nullptr, if it is not null, print it
+		if (p->right) cout <<"Right Child: " << p->right->val <<" "; // avoid to access an nullptr, if it is not null, print it
 		cout << endl; 
-		traverse(p->left); 
-		traverse(p->right); 
+		traverse(p->left); // recursive call to visit left node 
+		traverse(p->right); // recursive call to visit right node
 	}
 }
 void destroyTree(Node* &p) {
@@ -60,47 +60,44 @@ Node* search(Node *p, int val) {
 }
 Node* remove(Node* p, int val) {
 	if (p) {
-		//cout << "C0"; 
-		if (p->val < val) {
-			p->right = remove(p->right, val);
+		if (p->val < val) { // if the value you want to deleted is larger than value of current node
+			p->right = remove(p->right, val); // visit the right subtree to find
 			return p; 
 		}
-		else if (p->val > val) {
-			p->left = remove(p->left, val);
+		else if (p->val > val) { // if the value you want to deleted is smaller than value of current node
+			p->left = remove(p->left, val); // visit the left subtree to find
 			return p;
-		}
+		} 
+		// if the current value is the value you want to delete, this node is p
 		else { 
-			//cout << "C1"; 
-			if (!p->right && !p->left) {
+			if (!p->right && !p->left) { // if p don't have any children, just delete it
 				delete p; 
 				p = nullptr; 
 				return p; 
 			}
-			if (!p->right && p->left) {
-				//cout << "CL";
+			if (!p->right && p->left) { // if p has only left child, delete p then that position will be replaced by the left subtree
 				Node* t = p->left;
 				delete p; 
 				p = nullptr; 
 				return t; 
 			} else 
-			if (p->right && !p->left) {
-				//cout << "CR";
+			if (p->right && !p->left) { // if p has only right child, delete p then that position will be replaced by the right subtree
 				Node* t = p->right;
 				delete p;
 				p = nullptr;
 				return t;
 			}
-			else {
+			else { // if p have 2 child, just replace the value by the predecessor's (maximum of smaller value) in that subtree
 				Node* t = p->right;
 				while (t->left)
 					t = t->left; 
 				p->val = t->val; 
-				p->right = remove(p->right, p->val); 
+				p->right = remove(p->right, p->val); // then delete the original node having maximum of smaller value
 				return p; 
 			}
 		}
-	} else
-		return nullptr; 
+	} else // if the value does not exist
+		return nullptr;  // do nothing
 }
 void initialize(BinarySearchTree &bst) {
 	bst.root = nullptr; 

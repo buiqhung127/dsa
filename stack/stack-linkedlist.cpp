@@ -48,6 +48,5 @@ int main(){
         cout << popTop(st)->value <<endl ; 
     }
 
-
     return 0 ; 
 }
