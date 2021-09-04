@@ -2,7 +2,7 @@
 #define maxN 13 
 using namespace std; 
 
-void createHashTable(int *a, int n, int *hashed) {
+void createHashTable(int *a, int n, int *hashed) { // h = ((k % prime_number) + i * i) % size  
 	for (int i = 0; i < n; i++) {
 		int j = 0; 
 		while (hashed[(a[i] + j * j) % maxN] != -1)

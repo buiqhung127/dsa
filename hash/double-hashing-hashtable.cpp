@@ -18,7 +18,7 @@ int nearestPrime(int n){
 }
 void pushHashTable(int *data, int *hashTable, int size, int h1, int h2, int key, int info){
     int i = 0, k ; 
-    do {
+    do { // ((key % prime_number_1 ) + i * ( key % prime_number_2)) % size
         k = (key % h1 + i * (key % h2)) % size ; 
         i++ ; 
     } while (hashTable[k] != -1 ) ; 
