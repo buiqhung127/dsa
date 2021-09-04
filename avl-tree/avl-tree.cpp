@@ -111,12 +111,12 @@ Node* deleteNodeAVL(Node* p, int key) {
 		if (p->value > key) {
 			p->lChild = deleteNodeAVL(p->lChild, key);
 			p->weight = 1 + max(getWeight(p->lChild), getWeight(p->rChild));
-			return p; 
+			return checkAndRotate(p); // check rotate everywhere
 		}
 		else if (p->value < key) {
 			p->rChild = deleteNodeAVL(p->rChild, key);
 			p->weight = 1 + max(getWeight(p->lChild), getWeight(p->rChild));
-			return p;
+			return checkAndRotate(p);
 		}
 		else {
 			if (!p->lChild && !p->rChild) {
@@ -137,12 +137,12 @@ Node* deleteNodeAVL(Node* p, int key) {
 			}
 			else {
 				Node* t = p->lChild;
-				while (t->rChild)
+				while (t->rChild) // get the predecessor, place it to the delete cell then delete the old one 
 					t = t->rChild;
 				p->value = t->value;
-				p->lChild = deleteNodeAVL(p->lChild, p->value);
+				p->lChild = deleteNodeAVL(p->lChild, p->value); 
 				p->weight = 1 + max(getWeight(p->lChild), getWeight(p->rChild));
-				return checkAndRotate(p);
+				return checkAndRotate(p); // is same to the binary tree delete but the calculation about 2 side weight and adjust 
 			}
 		}
 	}
