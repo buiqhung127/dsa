@@ -1,53 +1,46 @@
 #include<iostream>
 using namespace std; 
-
 void heapify(int *a, int posRoot ,int n) {
-	int maxPos = posRoot; 
-	int l = 2 * posRoot + 1; 
-	int r = 2 * posRoot + 2; 
+	int maxPos = posRoot; // all child must smaller than parent 
+	int l = 2 * posRoot + 1; // left child 
+	int r = 2 * posRoot + 2; // right child
 
-	if (l < n && a[maxPos] > a[l])  
+	// get the maximum to make it to be the new parent
+	if (l < n && a[maxPos] < a[l])  
 		maxPos = l; 
-	if (r < n && a[maxPos] > a[r]) 
+	if (r < n && a[maxPos] < a[r]) 
 		maxPos = r;
 
-	if (maxPos != posRoot) {
+	if (maxPos != posRoot) { // conflict to the properties, swap the weaker to be child and the stronger to be parent
 		int t = a[posRoot]; 
 		a[posRoot] = a[maxPos]; 
 		a[maxPos] = t; 
-		for (int i = 0; i < n; i++)
-			cout << a[i] << " ";
-		cout << endl; 
-		heapify(a, maxPos , n); 
+		heapify(a, maxPos , n); // maybe the weaker is smaller in the next subtree so we must examine and adjust it
 	}
 
 }
-
-
 void heapSort(int *a, int n) {
-	for (int i = n / 2  - 1; i >= 0; i--) {
-		heapify(a, i, n); 
+	for (int i = n / 2  - 1; i >= 0; i--) { // elements that has position >= n/2 don't have any child ( (n/2) * 2 + 1 = n + 1, n + 1 > n - 1 )
+		heapify(a, i, n); // build the heap tree from the parent of leaves, solve the heap properties  
+		//from the smaller subtree to the bigger one
 	}
 	for (int i = n - 1; i > 0 ; i--) {
-		swap(a[0], a[i]); 
-		for (int i = 0; i < n; i++)
-			cout << a[i] << " ";
-		cout << endl;
-		heapify(a, 0, i); 
+		swap(a[0], a[i]); // get the maximimum then put it into the true position for sorting results
+		//for (int i = 0; i < n; i++)
+		//	cout << a[i] << " ";
+		//cout << endl;
+		heapify(a, 0, i); // we have just get the maximum and replace it by a leaf, need to heapify it again with a limit
+		// to preserve the true order
 	}
-	//for (int i = 0; i < n; i++)
-	//	cout << a[i] << " "; 
 }
-
-
-
 int main() {
 	int n, a[100]; 
 	cin >> n;
 	for (int i = 0; i < n; i++)
 		cin >> a[i]; 
 	heapSort(a, n); 
-
+	for (int i = 0 ; i < n ; i++)
+		cout <<a[i] <<" " ; 
 
 	return 0;
 }
