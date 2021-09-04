@@ -7,12 +7,15 @@ void swap(int &x, int &y){
 } 
 void shakerSort(int *a, int n){
     int left = 0, right = n - 1, k = 0; 
-    while (left < right){
+    while (left < right){ 
         left = k ;  
         for (int i = left ; i < right ; i++)
-            if (a[i] > a[i+1]){
+            if (a[i] > a[i+1]){ // bring the unsorted largest to the true position
                 swap(a[i], a[i+1]) ; 
-                k = i ; 
+                k = i ; // mark the last exchange
+                // bring the largest in the informed region, if there is
+                // only few larger numbers in the remain one and we don't swap then, mean it 
+                // is already in the true position. 
             }
         right = k ; 
         for (int i = right ; i > left ; i--)
