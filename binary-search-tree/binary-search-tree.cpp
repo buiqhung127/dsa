@@ -150,9 +150,8 @@ void nodeInsertionWithoutRecursion(Node *&root, int key, int value){
         }
     }
 }
-void nodeDeletionWithoutRecursion(Node *&root, int value){
+void nodeDeletionWithoutRecursion(Node *&root, int value, Node *parent){
     Node *p = root ;
-    Node *parent = newNode(-1,-1) ;
 	bool isLeft = true ; 
 	parent->left = root ;  
     while (p){
@@ -204,6 +203,7 @@ void nodeDeletionWithoutRecursion(Node *&root, int value){
 int main() {
 	int n, x; 
 	BinarySearchTree bst;
+	Node *fakeNode = newNode(-1, -1) ; 
 	initialize(bst); 
 	cin >> n; 
 	for (int i = 0 ; i < n ; i++){
@@ -222,12 +222,13 @@ int main() {
 		cout << "Not found!";*/ 
 	cout << "\n----------------\nEnter the number that you want to delete:\n>>"; 
 	cin >> x; 
-	bst.root = remove(bst.root, x); 
-	//nodeDeletionWithoutRecursion(bst.root, x) ; 
+	//bst.root = remove(bst.root, x); 
+	nodeDeletionWithoutRecursion(bst.root, x, fakeNode) ; 
 	traverse(bst.root); 
 	cout << endl; 
 	destroyTree(bst.root); 
 	//7
 	//53 26 22 51 75 98 80
+	delete fakeNode ; 
 	return 0; 
 }
