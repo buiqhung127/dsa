@@ -1,4 +1,16 @@
-#include"bst-other-utilities.h"
+#include<iostream>
+#include<stack>
+using namespace std;
+struct Node {
+	int val;
+	int key; 
+	Node* left;
+	Node* right;
+};
+struct BinarySearchTree {
+	Node* root; 
+};
+
 Node* newNode(int key, int value) {
 	Node *p = new Node; 
 	p->key = key; // assign the key to the node
@@ -77,11 +89,11 @@ Node* remove(Node* p, int val) {
 				return t;
 			}
 			else { // if p have 2 child, just replace the value by the predecessor's (maximum of smaller value) in that subtree
-				Node* t = p->right;
-				while (t->left)
-					t = t->left; 
+				Node* t = p->left;
+				while (t->right)
+					t = t->right; 
 				p->val = t->val; 
-				p->right = remove(p->right, p->val); // then delete the original node having maximum of smaller value
+				p->left = remove(p->left, p->val); // then delete the original node having maximum of smaller value
 				return p; 
 			}
 		}
@@ -94,6 +106,101 @@ void initialize(BinarySearchTree &bst) {
 bool isEmpty(BinarySearchTree bst) {
 	return (!bst.root) ? true : false; 
 }
+void preOrderWithoutRecursion(Node* root){
+    // without using recursion
+    stack<Node*> stk ; 
+    stk.push(root) ; 
+    while (!stk.empty()){
+        Node *p = stk.top() ; 
+        stk.pop() ; 
+        cout <<p->val <<endl ;
+        if (p->right) stk.push(p->right) ;  
+        if (p->left) stk.push(p->left) ;  
+    }
+}
+void postOrderWithoutRecursion(Node* root){
+    //without recursion
+    stack<Node*> stk ; 
+    stk.push(root) ; 
+    while (!stk.empty()){
+        Node *p = stk.top() ; 
+        stk.pop() ; 
+        if (p->right) stk.push(p->right) ;  
+        if (p->left) stk.push(p->left) ; 
+        cout <<p->val <<endl ;
+    }
+}
+void nodeInsertionWithoutRecursion(Node *&root, int key, int value){
+    Node * p = root ; 
+    if (!root) root = newNode(key,value) ; 
+    else 
+    while (true){
+        if (p->val < value){
+            if (!p->right){
+                p->right = newNode(key,value) ; 
+                break ; 
+            } else 
+                p = p->right ; 
+        } else {
+             if (!p->left){
+                p->left = newNode(key,value) ; 
+                break ; 
+            } else 
+                p = p->left ; 
+        }
+    }
+}
+void nodeDeletionWithoutRecursion(Node *&root, int value){
+    Node *p = root ;
+    Node *parent = newNode(-1,-1) ;
+	bool isLeft = true ; 
+	parent->left = root ;  
+    while (p){
+        if (p->val == value){
+            if (!p->left && !p->right){
+                delete p ; 
+                p = nullptr ; 
+				break ; 
+            } else if (p->left && !p->right){
+                Node * t = p->left ;  
+                delete p ; 
+                p = t ; 
+				break ; 
+            } else if (!p->left && p->right){
+                Node * t = p->right ; 
+                delete p ; 
+                p = t ; 
+				break ; 
+            } else {
+                parent = p ; 
+                Node * t = p->left ; 
+				isLeft = true ; 
+                while (t->right){
+                    parent = t ; 
+                    t = t->right ;
+					isLeft = false ;
+                } 
+                p->val = t->val  ; 
+                value = t->val ; 
+                p = t ; 
+            }
+        } 
+        else if (p->val < value){
+            parent = p ; 
+            p = p->right ; 
+            isLeft = false ; 
+        }
+        else {
+            parent = p ; 
+            p = p->left ; 
+            isLeft = true ; 
+        }
+    } 
+    if (isLeft)
+        parent->left = p ; 
+    else 
+        parent->right = p ;
+}
 int main() {
 	int n, x; 
 	BinarySearchTree bst;
@@ -101,20 +208,22 @@ int main() {
 	cin >> n; 
 	for (int i = 0 ; i < n ; i++){
 		cin >> x; 
-		bst.root = insert(bst.root, i, x); 
+		//bst.root = insert(bst.root, i, x); 
+		nodeInsertionWithoutRecursion(bst.root, i, x) ; 
 	}
 	traverse(bst.root); 
-	preOrderWithoutRecursion(bst.root) ; 
-	cout << "\n----------------\nEnter the number that you want to find:\n>>";
+	//preOrderWithoutRecursion(bst.root) ; 
+	/*cout << "\n----------------\nEnter the number that you want to find:\n>>";
 	cin >> x; 
 	Node *t = search(bst.root, x); 
 	if (t)
 		cout << t->key<<" " <<t->val;
 	else
-		cout << "Not found!"; 
+		cout << "Not found!";*/ 
 	cout << "\n----------------\nEnter the number that you want to delete:\n>>"; 
 	cin >> x; 
 	bst.root = remove(bst.root, x); 
+	//nodeDeletionWithoutRecursion(bst.root, x) ; 
 	traverse(bst.root); 
 	cout << endl; 
 	destroyTree(bst.root); 
