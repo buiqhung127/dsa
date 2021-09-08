@@ -1,15 +1,4 @@
-#include<iostream>
-using namespace std;
-struct Node {
-	int val;
-	int key; 
-	Node* left;
-	Node* right;
-};
-struct BinarySearchTree {
-	Node* root; 
-};
-
+#include"bst-other-utilities.h"
 Node* newNode(int key, int value) {
 	Node *p = new Node; 
 	p->key = key; // assign the key to the node
@@ -115,6 +104,7 @@ int main() {
 		bst.root = insert(bst.root, i, x); 
 	}
 	traverse(bst.root); 
+	preOrderWithoutRecursion(bst.root) ; 
 	cout << "\n----------------\nEnter the number that you want to find:\n>>";
 	cin >> x; 
 	Node *t = search(bst.root, x); 
