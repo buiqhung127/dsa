@@ -6,14 +6,11 @@ int prim(int a[][maxN], int n){
     bool *isVisited = new bool[n];
     int *d = new int[n] ; 
     int sum = 0 ;  
-    for (int i = 0 ; i < n ; i++){
+    for (int i = 0 ; i < n ; i++){ // initialize the weight belongs to each path
         d[i] = maxV ; 
         isVisited[i] = false ; 
     }
-    for (int i = 0 ; i < n ; i++)
-        for (int j = 0 ; j < n ; j++)
-            //cout <<a[i][j] <<endl ;  
-    d[0] = 0 ; 
+    d[0] = 0 ; // push the main region 0 to the city first
     for (int k = 0 ; k < n ; k++){
         int ver = 0 ; 
         int min_d = maxV ; 
@@ -23,7 +20,7 @@ int prim(int a[][maxN], int n){
                 ver = i ;  
             }
         //cout << min_d <<endl; 
-        sum = max(min_d,sum) ; 
+        sum = max(min_d,sum) ; // get the overall time cost by max function
         isVisited[ver] = true ; 
         for (int i = 0 ; i < n ; i++)
             if (d[i] > a[ver][i] && isVisited[i] == false)

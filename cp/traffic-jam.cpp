@@ -3,19 +3,14 @@
 #define maxV 100000
 using namespace std ;
 int dijkstra(int **graph, int n, int s, int t){
-    int sum = 0 ; 
-    int *d = new int[n * n] ;
+    int sum = 0 ;  int *d = new int[n * n] ;  int *prev = new int[n * n] ;   // init value
     bool *isVisited = new bool[n * n] ;
-    int *prev = new int[n * n] ;   
-    for (int i = 0 ; i < n * n ; i++){
+    for (int i = 0 ; i < n * n ; i++){ // initialize the distance from starting vertex and the visted status
         d[i] = maxV ;
         isVisited[i] = false ; 
-    }
-    d[s] = 0 ; 
-    prev[s] = -1 ;
-    for (int k = 0 ; k < n * n ; k++){
-        int min = maxV ; 
-        int pos = 0 ; 
+    } d[s] = 0 ; prev[s] = -1 ; // init for the starting vertex
+    for (int k = 0 ; k < n * n ; k++){ // dijkstra's algorithm
+        int min = maxV, pos = 0; 
         for (int i = 0 ; i < n * n ; i++)
             if (min > d[i] && isVisited[i] == false){
                 min = d[i] ; 
@@ -29,21 +24,17 @@ int dijkstra(int **graph, int n, int s, int t){
         for (int i = 0 ; i < n * n ; i++)
             if (graph[pos][i] + min < d[i] && isVisited[i] == false ){
                 d[i] = graph[pos][i] + min ; 
-                prev[i] = pos; 
+                prev[i] = pos; // trace the path later
             }
-
     }
     int i = t, cnt = 0;
-    while (i != -1){
+    while (i != -1){ // trace the path
         d[cnt++] = i ; 
         i = prev[i] ; 
     }
-    for (int i = cnt - 1 ; i >= 0 ; i--){
-        cout << d[i] / n <<" " << d[i] % n <<endl; 
-    }
-    delete[] d ; 
-    delete[] isVisited; 
-    delete[] prev ; 
+    for (int i = cnt - 1 ; i >= 0 ; i--)
+        cout << d[i] / n <<" " << d[i] % n <<endl; // display the path 
+    delete[] d ;  delete[] isVisited; delete[] prev ;
     return sum ; 
 } 
 int main(){
@@ -63,9 +54,13 @@ int main(){
             int x ; 
             fi >> x ; 
             if (i * n + j - 1 >= 0)
-                graph[i * n + j - 1][i * n + j] = x ;
+                graph[i * n + j - 1][i * n + j] = x + 1 ;
             if ((i - 1) * n + j >= 0)
-            graph[(i - 1) * n + j][i * n + j] = x ; 
+                graph[(i - 1) * n + j][i * n + j] = x + 1; 
+            if (i * n + j + 1 < n * n)
+                graph[i * n + j + 1][i * n + j] = x + 1;
+            if ((i + 1) * n + j < n * n)
+                graph[(i + 1) * n + j][i * n + j] = x + 1; 
         }
     
     

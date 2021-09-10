@@ -12,35 +12,28 @@ struct StudentRecord{
     DoB birth; 
 }; 
 void radixSort(StudentRecord *list, int n){
-    // since we cannot access properies easily by string like python, we must consider each 
-    // properties separately from least important to most important
-    StudentRecord *temp = new StudentRecord[n] ; 
-    int * counting = new int[CURRENT_YEAR] ; // choose year for more memory cell
-
-    for (int i = 0 ; i < CURRENT_YEAR ; i++)
+    StudentRecord *temp = new StudentRecord[n] ; int * counting = new int[CURRENT_YEAR] ; // choose year for more memory cell
+    for (int i = 0 ; i < 31 ; i++)     // day
         counting[i] = 0 ; 
     for (int i = 0 ; i < n; i++)
         counting[list[i].birth.dd]++ ;   
-    for (int i = 1 ; i < CURRENT_YEAR ; i++)
+    for (int i = 1 ; i < 31 ; i++)
         counting[i] = counting[i-1] + counting[i] ; 
     for (int i = n-1 ; i >= 0 ; i--)
         temp[--counting[list[i].birth.dd]] = list[i] ;   
     for (int i = 0 ; i < n ; i++)
         list[i] = temp[i] ; 
-
-
-    for (int i = 0 ; i < CURRENT_YEAR ; i++)
+    for (int i = 0 ; i < 12 ; i++)     // month
         counting[i] = 0 ; 
     for (int i = 0 ; i < n; i++)
         counting[list[i].birth.mm]++ ; 
-    for (int i = 1 ; i < CURRENT_YEAR ; i++)
+    for (int i = 1 ; i < 12 ; i++)
         counting[i] = counting[i-1] + counting[i] ; 
     for (int i = n-1 ; i >= 0 ; i--)
         temp[--counting[list[i].birth.mm]] = list[i] ;   
     for (int i = 0 ; i < n ; i++)
         list[i] = temp[i] ; 
-
-    for (int i = 0 ; i < CURRENT_YEAR ; i++)
+    for (int i = 0 ; i < CURRENT_YEAR ; i++)   //year
         counting[i] = 0 ; 
     for (int i = 0 ; i < n; i++)
         counting[list[i].birth.yyyy]++ ; 
@@ -50,8 +43,6 @@ void radixSort(StudentRecord *list, int n){
         temp[--counting[list[i].birth.yyyy]] = list[i] ;   
     for (int i = 0 ; i < n ; i++)
         list[i] = temp[i] ; 
-
-
     delete[] counting; 
     delete[] temp ; 
 }
