@@ -1,2 +1,2 @@
 # dsa
-Implementations of several algorithms in the Data Structures and Algorithms course.
+Implementations of several algorithms in the CSC10004 Data Structures and Algorithms course.
