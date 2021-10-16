@@ -14,12 +14,10 @@ int gcd(int a, int b){
     return gcd(b , a%b) ; 
 }
 fraction reduce(fraction f){
-    while (int(f.n) != f.n){
+    while (int(f.n) != f.n)
         f.n *= 10 ; 
-    }
-    while (int(f.d) != f.d){
+    while (int(f.d) != f.d)
         f.d *= 10 ; 
-    } 
     bool neg = false ; 
     if (f.n * f.d < 0)
         neg = true ;
@@ -86,7 +84,7 @@ int main(){
     cout <<"Input the numerator of the second fraction: " ; 
     cin >> f2.n ; 
     do {
-         cout <<"Input the denorminator of the first fraction: " ; 
+        cout <<"Input the denorminator of the first fraction: " ; 
         cin >> f2.d ; 
     } while (f2.d == 0) ; 
 
